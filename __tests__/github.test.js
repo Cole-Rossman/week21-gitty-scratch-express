@@ -38,4 +38,26 @@ describe('github routes', () => {
       exp: expect.any(Number),
     });
   });
+
+  it('should sign out an existing user', async () => {
+    const res = await agent
+      .get('/api/v1/github/callback?code=42')
+      .redirects(1);
+
+    expect(res.body).toEqual({
+      id: expect.any(String),
+      username: 'fake_github_user',
+      email: 'not-real@example.com',
+      avatar: expect.any(String),
+      iat: expect.any(Number),
+      exp: expect.any(Number),
+    });
+    const nextRes = await request(app).delete('/api/v1/github/sessions');
+    expect(nextRes.body).toEqual({
+      success: true,
+      message: 'Signed out successfully!',
+    });
+    expect(nextRes.status).toEqual(200);
+  });
+
 });
