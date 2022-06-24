@@ -2,6 +2,7 @@ const pool = require('../lib/utils/pool');
 const setup = require('../data/setup');
 const request = require('supertest');
 const app = require('../lib/app');
+const agent = request.agent(app);
 
 jest.mock('../lib/services/github.js');
 // it will read the file in services and implements the mock functions in mock folder
@@ -24,8 +25,7 @@ describe('github routes', () => {
   });
 
   it('should login and redirect users to /api/v1/github/dashboard', async () => {
-    const res = await request
-      .agent(app)
+    const res = await agent
       .get('/api/v1/github/callback?code=42')
       .redirects(1);
 
