@@ -51,7 +51,7 @@ describe('github routes', () => {
     ]);
   });
   
-  it('/api/v1/posts should create a new secret if signed in', async () => {
+  it('/api/v1/posts should create a new post if signed in', async () => {
     const res = await agent
       .get('/api/v1/github/callback?code=42')
       .redirects(1);
