@@ -29,8 +29,8 @@ describe('github routes', () => {
       iat: expect.any(Number),
       exp: expect.any(Number),
     });
-    const nextRes = await request(app).get('/api/v1/posts');
-    expect(nextRes.status).toEqual(200);
+    const nextRes = await agent.get('/api/v1/posts');
+    // expect(nextRes.status).toEqual(200);
     expect(nextRes.body).toEqual([
       {
         id: '1',
@@ -50,5 +50,28 @@ describe('github routes', () => {
       },
     ]);
   });
+  
+  it('/api/v1/posts should create a new secret if signed in', async () => {
+    const res = await agent
+      .get('/api/v1/github/callback?code=42')
+      .redirects(1);
+
+    expect(res.body).toEqual({
+      id: expect.any(String),
+      username: 'fake_github_user',
+      email: 'not-real@example.com',
+      avatar: expect.any(String),
+      iat: expect.any(Number),
+      exp: expect.any(Number),
+    });
+
+    const nextRes = await agent.post('/api/v1/posts').send({
+      description: 'I like ice cream', 
+    });
+    expect(nextRes.status).toEqual(200);
+    expect(nextRes.body.description).toEqual('I like ice cream');
+    expect(nextRes.body.id).not.toBeUndefined();
+  });
+
 
 });
